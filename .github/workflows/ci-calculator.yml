@@ -1,0 +1,31 @@
+name: Calculator CI # Display name in the Actions tab.
+on: # Events that start the workflow.
+  push: # Check commits pushed to the integration branch.
+    branches: [main] # Limit push builds to main.
+  pull_request: # Check proposed changes before merging.
+    branches: [main] # Match the pull request target branch.
+permissions: # Use the minimum repository token permissions.
+  contents: read # Checkout only needs read access.
+jobs: # Define the automated build jobs.
+  build: # Identifier for the calculator build job.
+    name: Java ${{ matrix.java }} # Label each matrix job.
+    runs-on: ubuntu-latest # Use a GitHub-hosted Linux runner.
+    strategy: # Run the same steps on two Java versions.
+      fail-fast: false # Keep both results if one version fails.
+      matrix: # Generate one job for each listed JDK.
+        java: ['17', '21'] # Local baseline and newer LTS JDK.
+    steps: # Run these steps in order in each job.
+      - name: Checkout source # Retrieve the triggering commit.
+        uses: actions/checkout@v4 # Official checkout action.
+      - name: Set up Java and Maven cache # Prepare Java tooling.
+        uses: actions/setup-java@v4 # Official Java setup action.
+        with: # Inputs passed to setup-java.
+          distribution: temurin # Use Eclipse Temurin OpenJDK.
+          java-version: ${{ matrix.java }} # Select this job's JDK.
+          cache: maven # Reuse downloaded Maven dependencies.
+      - name: Resolve Maven dependencies # Check artifact resolution.
+        run: mvn -B dependency:resolve # Fail if dependencies cannot resolve.
+      - name: Compile calculator # Build production source from scratch.
+        run: mvn -B clean compile # Remove old output and compile.
+      - name: Run JUnit tests # Execute the complete Lab 4 test suite.
+        run: mvn -B test # Test failures make this job fail.
