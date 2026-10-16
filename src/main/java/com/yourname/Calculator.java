@@ -18,7 +18,7 @@ public class Calculator {
 
         return switch (op) {
             case "+" -> x + y;
-            case "-" -> x + y;
+            case "-" -> x - y;
             case "*" -> x * y;
             case "/" -> {
                 if (y == 0.0) {
