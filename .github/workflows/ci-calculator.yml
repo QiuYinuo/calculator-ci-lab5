@@ -29,3 +29,20 @@ jobs: # Define the automated build jobs.
         run: mvn -B clean compile # Remove old output and compile.
       - name: Run JUnit tests # Execute the complete Lab 4 test suite.
         run: mvn -B test # Test failures make this job fail.
+  docker: # Build the container only after both Java test jobs pass.
+    name: Docker build and smoke tests
+    needs: build # Preserve the Lab 5 test matrix as a prerequisite.
+    runs-on: ubuntu-latest # The hosted runner includes Docker.
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Build calculator image
+        run: docker build -t calculator:v1 .
+      - name: Verify calculator inside the container
+        shell: bash
+        run: |
+          test "$(docker run --rm calculator:v1)" = "4.0"
+          test "$(docker run --rm calculator:v1 9 - 4)" = "5.0"
+          test "$(docker run --rm calculator:v1 3 '*' 4)" = "12.0"
+          test "$(docker run --rm calculator:v1 10 / 4)" = "2.5"
+          echo "All four container arithmetic checks passed."
