@@ -3,8 +3,8 @@ FROM maven:3.9.16-eclipse-temurin-17 AS build
 # WORKDIR sets the directory for subsequent build instructions.
 WORKDIR /workspace
 # COPY adds the Maven configuration and the existing calculator source.
-COPY pom.xml quality-rules.xml ./
-COPY src ./src
+COPY backend/pom.xml backend/quality-rules.xml ./
+COPY backend/src ./src
 # RUN compiles, runs all JUnit tests and packages the executable shaded JAR.
 RUN mvn -B package
 

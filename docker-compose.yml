@@ -1,0 +1,17 @@
+# Compose creates a shared network with service-name DNS.
+services:
+  backend:
+    # Build the inherited Java calculator API locally.
+    build: ./backend
+    # Publish the API for direct verification.
+    ports: ["8000:8000"]
+    # Restart only after an abnormal process exit.
+    restart: on-failure
+  web:
+    # Build the nginx static frontend locally.
+    build: ./web
+    # Expose the website on host port 8080.
+    ports: ["8080:80"]
+    # Start backend first; this does not guarantee application readiness.
+    depends_on: [backend]
+    restart: on-failure

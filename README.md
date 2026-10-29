@@ -38,3 +38,16 @@ mvn pmd:pmd
 
 Open `target/site/jacoco/index.html` for coverage and
 `target/reports/pmd.html` for static analysis findings.
+
+## Lab 7: Docker Compose
+
+The original calculator and JUnit tests now live in `backend/`.
+The Java API listens on port 8000; nginx serves `web/index.html` on port 8080
+and proxies `/api/` to `http://backend:8000` using Compose service DNS.
+
+Run `docker compose up -d --build`, then open http://127.0.0.1:8080.
+Inspect `docker compose ps` and `docker compose logs`.
+Stop and remove both services with `docker compose down`.
+`depends_on` orders startup but does not wait for API readiness; retry an initial request if needed.
+Tests: `mvn -f backend/pom.xml clean test`.
+The root Dockerfile retains the Lab 6 CLI; backend/Dockerfile starts the API.
